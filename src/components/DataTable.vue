@@ -57,7 +57,7 @@
     },
     methods: {
       copy (index) {
-        this.list.push(Object.assign({}, this.list[index]))
+        this.list.push(JSON.parse(JSON.stringify(this.list[index])))
       },
       addRow (row) {
         this.list.push(row)
@@ -67,22 +67,12 @@
       },
       increment (index, indexScore) {
         if (this.list[index].scores[indexScore] < 10) {
-          const scores = [
-            ...this.list[index].scores
-          ]
-          scores[indexScore]++
-          Vue.set(this.list, index, Object.assign({}, this.list[index], this.list[index].scores[indexScore]++))
+          this.list[index].scores.splice(indexScore, 1, ++this.list[index].scores[indexScore])
         }
       },
       decrement (index, indexScore) {
         if (this.list[index].scores[indexScore] > 1) {
-          const scores = [
-            ...this.list[index].scores
-          ]
-          scores[indexScore]--
-          Vue.set(this.list, index, Object.assign({}, this.list[index], {
-            scores
-          }))
+          this.list[index].scores.splice(indexScore, 1, --this.list[index].scores[indexScore])
         }
       },
       changeMode (mode) {
