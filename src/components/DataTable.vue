@@ -1,34 +1,41 @@
 <template>
-  <table class="data" >
-    <thead v-if="thead">
-      <tr>
-        <th>Имя</th>
-        <th>Фамилия</th>
-        <th>Оценка</th>
-        <th>Действия</th>
-      </tr>
-    </thead>
-    <tbody>
-      <table-row
-      v-for="(item, index) in list"
-      :item="item"
-      :index="index"
-      @copy="copy"
-      @increment="increment"
-      @decrement="decrement"
-      :key="index"
-      />
-    </tbody>
-  </table>
+  <div class="table">
+    <table class="data" >
+      <thead v-if="thead">
+        <tr>
+          <th>Имя</th>
+          <th>Фамилия</th>
+          <th>Оценка</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <table-row
+        v-for="(item, index) in list"
+        :item="item"
+        :index="index"
+        @cancel="changeObject"
+        @save="changeObject"
+        :key="index"
+        />
+      </tbody>
+    </table>
+    <AddForm
+    :editorMode="addMode"
+    @changeMode="changeMode"
+    @addRow="addRow" />
+  </div>
 </template>
 
 <script>
+  import Vue from 'vue'
   import tableRow from './TableRow'
+  import AddForm from './AddForm'
   export default {
     name: 'data',
     data () {
       return {
-        message: 'Таблица',
+        addMode: false,
         thead: true,
         list: [
           {
@@ -45,31 +52,53 @@
       }
     },
     components: {
-      tableRow
+      tableRow,
+      AddForm
     },
     methods: {
       copy (index) {
-        this.list.push(this.list[index])
+        this.list.push(Object.assign({}, this.list[index]))
       },
-      increment (index) {
-        this.list[index].score >= 10 ? false : this.list[index].score++
+      addRow (row) {
+        this.list.push(row)
       },
-      decrement (index) {
-        this.list[index].score <= 1 ? false : this.list[index].score--
+      changeObject (index, object) {
+        Vue.set(this.list, index, object)
+      },
+      changeScore (index, score) {
+        console.log('emitted', index, score)
+        Vue.set(this.list, index, Object.assign({}, this.list[index], { score }))
+      },
+      changeMode (mode) {
+        this.addMode = mode
       }
     },
     mounted () {
       this.$root.$on('copy', this.copy)
-      this.$root.$on('increment', this.increment)
-      this.$root.$on('decrement', this.decrement)
+      this.$root.$on('changeScore', this.changeScore)
     }
   }
 </script>
 
 <style scoped>
-.data {
+.form,
+.table {
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.data {
   width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+th:nth-child(1),
+th:nth-child(2) {
+  width: 25%
+}
+
+th:nth-child(3) {
+  width: 20%
 }
 </style>

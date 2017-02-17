@@ -1,9 +1,30 @@
 <template>
   <tr>
-    <td>{{ item.name }}</td>
-    <td>{{ item.subname}}</td>
-    <td><Score :score="item.score" :index="index" /></td>
-    <td><Controls :saveMode="false" :index="index" /></td>
+    <td>
+      <template v-if="!modeEditor">
+        {{ item.name }}
+      </template>
+      <template v-else>
+        <input type="text" :value="item.name" v-model="item.name" required>
+      </template>
+    </td>
+    <td>
+      <template v-if="!modeEditor">
+        {{ item.subname }}
+      </template>
+      <template v-else>
+        <input type="text" :value="item.subname" v-model="item.subname" required>
+      </template>
+    </td>
+    <td><Score :score="item.score" :index="index" :modeEditor="modeEditor" /></td>
+    <td>
+      <Controls
+      :modeEditor="modeEditor"
+      :index="index"
+      @backup="backup"
+      @cancelObject="cancelObject"
+      @save="save"
+       /></td>
   </tr>
 </template>
 
@@ -15,6 +36,27 @@
     components: {
       Score,
       Controls
+    },
+    data () {
+      return {
+        backupObject: {},
+        modeEditor: false
+      }
+    },
+    methods: {
+      backup () {
+        this.modeEditor = true
+        this.backupObject = Object.assign({}, this.item)
+      },
+      save () {
+        this.modeEditor = false
+        const save = Object.assign({}, this.item)
+        this.$emit('save', this.index, save)
+      },
+      cancelObject () {
+        this.modeEditor = false
+        this.$emit('cancel', this.index, this.backupObject)
+      }
     }
   }
 </script>
