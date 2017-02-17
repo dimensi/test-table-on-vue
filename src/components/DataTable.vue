@@ -41,12 +41,12 @@
           {
             name: 'Иван',
             subname: 'Иванов',
-            score: '10'
+            scores: [10, 9, 2]
           },
           {
             name: 'Илья',
             subname: 'Иванов',
-            score: '5'
+            scores: [5, 6, 7]
           }
         ]
       }
@@ -65,9 +65,25 @@
       changeObject (index, object) {
         Vue.set(this.list, index, object)
       },
-      changeScore (index, score) {
-        console.log('emitted', index, score)
-        Vue.set(this.list, index, Object.assign({}, this.list[index], { score }))
+      increment (index, indexScore) {
+        if (this.list[index].scores[indexScore] < 10) {
+          const scores = [
+            ...this.list[index].scores
+          ]
+          scores[indexScore]++
+          Vue.set(this.list, index, Object.assign({}, this.list[index], this.list[index].scores[indexScore]++))
+        }
+      },
+      decrement (index, indexScore) {
+        if (this.list[index].scores[indexScore] > 1) {
+          const scores = [
+            ...this.list[index].scores
+          ]
+          scores[indexScore]--
+          Vue.set(this.list, index, Object.assign({}, this.list[index], {
+            scores
+          }))
+        }
       },
       changeMode (mode) {
         this.addMode = mode
@@ -75,7 +91,8 @@
     },
     mounted () {
       this.$root.$on('copy', this.copy)
-      this.$root.$on('changeScore', this.changeScore)
+      this.$root.$on('increment', this.increment)
+      this.$root.$on('decrement', this.decrement)
     }
   }
 </script>

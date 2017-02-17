@@ -16,7 +16,7 @@
         <input type="text" :value="item.subname" v-model="item.subname" required>
       </template>
     </td>
-    <td><Score :score="item.score" :index="index" :modeEditor="modeEditor" /></td>
+    <td><Score v-for="(score, indexScore) in item.scores" :score="score" :indexScore="indexScore" :index="index" :modeEditor="modeEditor" /></td>
     <td>
       <Controls
       :modeEditor="modeEditor"
